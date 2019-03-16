@@ -1,8 +1,6 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // disable direct access
-}
+if (!defined('ABSPATH')) die('No direct access.');
 
 /**
  * Flex Slider specific markup, javascript, css and settings.
@@ -92,13 +90,12 @@ class MetaFlexSlider extends MetaSlider {
      * @return string
      */
     public function remove_bottom_margin( $class, $id, $settings ) {
-        if ( isset( $settings["navigation"] ) && $settings['navigation'] == 'false' ) {
+        if (isset($settings["navigation"] ) && 'false' == $settings['navigation']) {
             return $class .= " nav-hidden";
         }
 
-        // we don't want this filter hanging around if there's more than one slideshow on the page
-        remove_filter( 'metaslider_css_classes', array( $this, 'remove_bottom_margin' ), 11, 3 );
-
+        // We don't want this filter hanging around if there's more than one slideshow on the page
+        remove_filter('metaslider_css_classes', array($this, 'remove_bottom_margin' ), 12);
         return $class;
     }
 
@@ -122,35 +119,31 @@ class MetaFlexSlider extends MetaSlider {
         return $css;
     }
 
-    /**
-     * Enable the parameters that are accepted by the slider
-     *
-     * @param  string $param Parameters
-     * @return array|boolean enabled parameters (false if parameter doesn't exist)
-     */
-    protected function get_param( $param ) {
-        $params = array(
-            'effect' => 'animation',
-            'direction' => 'direction',
-            'prevText' => 'prevText',
-            'nextText' => 'nextText',
-            'delay' => 'slideshowSpeed',
-            'animationSpeed' => 'animationSpeed',
-            'hoverPause' => 'pauseOnHover',
-            'reverse' => 'reverse',
-            'navigation' => 'controlNav',
-            'links' =>'directionNav',
-            'carouselMode' => 'carouselMode',
-            'easing' => 'easing',
-            'autoPlay' => 'slideshow'
-        );
-
-        if ( isset( $params[$param] ) ) {
-            return $params[$param];
-        }
-
-        return false;
-    }
+	/**
+	 * Enable the parameters that are accepted by the slider
+	 *
+	 * @param  string $param Parameters
+	 * @return array|boolean enabled parameters (false if parameter doesn't exist)
+	 */
+	protected function get_param($param) {
+		$params = array(
+			'effect' => 'animation',
+			'direction' => 'direction',
+			'prevText' => 'prevText',
+			'nextText' => 'nextText',
+			'delay' => 'slideshowSpeed',
+			'animationSpeed' => 'animationSpeed',
+			'hoverPause' => 'pauseOnHover',
+			'reverse' => 'reverse',
+			'navigation' => 'controlNav',
+			'links' =>'directionNav',
+			'carouselMode' => 'carouselMode',
+			'easing' => 'easing',
+			'autoPlay' => 'slideshow',
+			'firstSlideFadeIn' => 'fadeFirstSlide'
+		);
+		return isset($params[$param]) ? $params[$param] : false;
+	}
 
     /**
      * Include slider assets

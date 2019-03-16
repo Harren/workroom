@@ -1,16 +1,12 @@
 <?php
+
+if (!defined('ABSPATH')) die('No direct access.');
+
 /**
  * Entry point for building the wordpress admin pages.
  * Temporarily extends the MetaSlider Class until more refactoring can be done.
  */
 Class MetaSlider_Admin_Pages extends MetaSliderPlugin {
-
-    /**
-     * The minimum capability to view the admin page
-     *
-     * @var string $capability
-     */
-    private $capability;
 
     /**
      * The MetaSlider plugin class
@@ -33,7 +29,6 @@ Class MetaSlider_Admin_Pages extends MetaSliderPlugin {
      */
     public function __construct($plugin) {
         $this->plugin = $plugin;
-        $this->capability = apply_filters('metaslider_capability', 'edit_others_posts');
         $this->notices = new MetaSlider_Notices($plugin);
         $this->tour = new MetaSlider_Tour($plugin, 'toplevel_page_metaslider');
         add_action('admin_enqueue_scripts', array($this, 'load_icon_css'));
@@ -44,7 +39,7 @@ Class MetaSlider_Admin_Pages extends MetaSliderPlugin {
      * Loads the icon on the top levelmenu page name
      */
     public function load_icon_css() {
-        wp_enqueue_style('metaslider-global', METASLIDER_ADMIN_URL . 'assets/css/icon.css', array(), METASLIDER_VERSION);
+        wp_enqueue_style('metaslider-global', METASLIDER_ADMIN_URL . 'assets/css/icon-' . sanitize_title(METASLIDER_VERSION) . '.css', array(), METASLIDER_VERSION);
     }
 
     /**
@@ -70,9 +65,9 @@ Class MetaSlider_Admin_Pages extends MetaSliderPlugin {
          
         wp_enqueue_media();
         wp_enqueue_script('jquery-ui-core');
-        wp_enqueue_script('jquery-ui-sortable');
+		wp_enqueue_script('jquery-ui-sortable');
      
-        wp_register_script('metaslider-admin-script', METASLIDER_ADMIN_URL . 'assets/js/admin.js', array('jquery'), METASLIDER_VERSION, true);
+        wp_register_script('metaslider-admin-script', METASLIDER_ADMIN_URL . 'assets/js/admin-' . sanitize_title(METASLIDER_VERSION) . '.js', array('jquery'), METASLIDER_VERSION, true);
         wp_localize_script('metaslider-admin-script', 'metaslider', array(
             'url' => __("URL", "ml-slider"),
             'caption' => __("Caption", "ml-slider"),
@@ -96,7 +91,29 @@ Class MetaSlider_Admin_Pages extends MetaSliderPlugin {
             'useWithCaution' => __("Caution: This setting is for advanced developers only. If you're unsure, leave it checked.", "ml-slider")
         ));
         wp_enqueue_script('metaslider-admin-script');
-        do_action('metaslider_register_admin_scripts');
+		do_action('metaslider_register_admin_scripts');
+		
+		// Register components and add support for the REST API / Admin AJAX
+		wp_register_script('metaslider-admin-components', METASLIDER_ADMIN_URL . 'assets/js/app-' . sanitize_title(METASLIDER_VERSION) . '.js', array(), METASLIDER_VERSION, true);
+
+		// Check if rest is available
+		$can_use_rest = class_exists('WP_REST_Controller');
+
+		// Further check, probably doing more harm than help
+		// $can_use_rest = class_exists('WP_REST_Controller') ? (200 === wp_remote_retrieve_response_code(wp_remote_get(rest_url()))) : false;
+		// Add extra data
+		wp_localize_script('metaslider-admin-components', 'metaslider_api', array(
+			'root' => $can_use_rest ? esc_url_raw(rest_url()) : false,
+			'nonce' => wp_create_nonce('wp_rest'),
+			'ajaxurl' => admin_url('admin-ajax.php'),
+			'proUser' => metaslider_pro_is_active(),
+			'hoplink' => metaslider_get_upgrade_link(),
+			'theme_editor_link' => admin_url('admin.php?page=metaslider-theme-editor'),
+			'supports_rest' => $can_use_rest,
+			'locale' => $this->gutenberg_get_jed_locale_data('ml-slider'),
+			'default_locale' => $this->gutenberg_get_jed_locale_data('default')
+		));
+		wp_enqueue_script('metaslider-admin-components');
     }
 
     /**
@@ -104,7 +121,7 @@ Class MetaSlider_Admin_Pages extends MetaSliderPlugin {
      */    
     public function load_upgrade_page_assets() {
         if ('upgrade' == $this->current_page) {
-            wp_enqueue_style('metaslider-upgrade-styles', METASLIDER_ADMIN_URL . 'assets/css/upgrade.css', false, METASLIDER_VERSION);
+            wp_enqueue_style('metaslider-upgrade-styles', METASLIDER_ADMIN_URL . 'assets/css/upgrade-' . sanitize_title(METASLIDER_VERSION) . '.css', false, METASLIDER_VERSION);
         }
     }
     
@@ -112,7 +129,7 @@ Class MetaSlider_Admin_Pages extends MetaSliderPlugin {
      * Loads in custom styling
      */    
     public function load_styles() {
-        wp_enqueue_style('metaslider-admin-styles', METASLIDER_ADMIN_URL . 'assets/css/admin.css', false, METASLIDER_VERSION);
+        wp_enqueue_style('metaslider-admin-styles', METASLIDER_ADMIN_URL . 'assets/css/admin-' . sanitize_title(METASLIDER_VERSION) . '.css', false, METASLIDER_VERSION);
 
         // Hook to load more styles and scripts (from pro)
         do_action('metaslider_register_admin_styles');
@@ -144,7 +161,9 @@ Class MetaSlider_Admin_Pages extends MetaSliderPlugin {
             return false;
         }
         $this->current_page = $slug;
-        $page = ('' == $parent) ? add_menu_page($title, $title, $this->capability, $slug, array($this, $method)) : add_submenu_page($parent, $title, $title, $this->capability, $slug, array($this, $method));
+        $capability = apply_filters('metaslider_capability', 'edit_others_posts');
+
+        $page = ('' == $parent) ? add_menu_page($title, $title, $capability, $slug, array($this, $method)) : add_submenu_page($parent, $title, $title, $capability, $slug, array($this, $method));
         
         // Load assets on all pages
         add_action('load-' . $page, array($this, 'fix_conflicts'));
@@ -167,5 +186,34 @@ Class MetaSlider_Admin_Pages extends MetaSliderPlugin {
      */
     public function render_upgrade_page() {
         include METASLIDER_PATH."admin/views/pages/upgrade.php";
-    }
+	}
+	
+	/**
+	 * Backup function for Gutenberg's gutenberg_get_jed_locale_data
+	 * 
+	 * @param string $domain - The text domain for the strings
+	 */
+	private function gutenberg_get_jed_locale_data($domain) {
+
+		if (function_exists('gutenberg_get_jed_locale_data')) {
+			return gutenberg_get_jed_locale_data($domain);
+		}
+		
+		$translations = get_translations_for_domain($domain);
+		$locale = array(
+			'' => array(
+				'domain' => $domain,
+				'lang' => is_admin() && function_exists('get_user_locale') ? get_user_locale() : get_locale(),
+			),
+		);
+
+		if (!empty($translations->headers['Plural-Forms'])) {
+			$locale['']['plural_forms'] = $translations->headers['Plural-Forms'];
+		}
+
+		foreach ($translations->entries as $msgid => $entry) {
+			$locale[$msgid] = $entry->translations;
+		}
+		return $locale;
+	}
 }

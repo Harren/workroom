@@ -26,13 +26,13 @@ define('DB_NAME', 'twbroom');
 define('DB_USER', 'root');
 
 /** MySQL数据库密码 */
-define('DB_PASSWORD', '123456');
+define('DB_PASSWORD', 'twbroom');
 
 /** MySQL主机 */
 define('DB_HOST', 'localhost');
 
 /** 创建数据表时默认的文字编码 */
-define('DB_CHARSET', 'utf8mb4');
+define('DB_CHARSET', 'utf8');
 
 /** 数据库整理类型。如不确定请勿更改 */
 define('DB_COLLATE', '');
@@ -47,14 +47,14 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
-define('AUTH_KEY',         'J[8-ncXqj{nP}xeJYOQ(y<0%y2K!GJx2#*t=%1i8Opz@R+nn]K-tW97#/5y_2:Q|');
-define('SECURE_AUTH_KEY',  '&Tvc[pE/}uq&S<6Y!~}w1~REX3#o7M^<.en4-mWt5rx@eX{Wz<A,&^^6d[+Q8-IZ');
-define('LOGGED_IN_KEY',    '1ZZD:Xf!Ng7~f{@<}2E2,IwiW#>1F<KqU[SyW5~Bo7N=#9=)UL.6Us;u+5C&D..P');
-define('NONCE_KEY',        'MkUX{ZV#sVdbMse[&0#DP>Dikxi8|5|S;,}>s5w*ceXpyb~e->Ya!wNSE$7TouP*');
-define('AUTH_SALT',        '&arjY_|5UbQ$Vzf~W4z#%f6Ny$,P;*P(w+F:_2T2SAWI5_a|&Tw~CadkA1ZUKV+)');
-define('SECURE_AUTH_SALT', '8&HU<8WgZ8,<vii?ge/6gZ@x];~B~2v~N(,JP]^d?b<G7;9:;u@;y5-Lxf Xvy:I');
-define('LOGGED_IN_SALT',   '`4LM 65f#Wf4+@-)i+HDy)Mfgc^n{39q,_qa)PS<XN3+dghtdAB!lrb5]L`%=4-.');
-define('NONCE_SALT',       'c}&l}$Lm~bQeGWU#j)OvI.7VtWhBH7=q4`cP4O|DZdNm{+MED/,Wx$k8PmFB%7v{');
+define('AUTH_KEY',         'put your unique phrase here');
+define('SECURE_AUTH_KEY',  'put your unique phrase here');
+define('LOGGED_IN_KEY',    'put your unique phrase here');
+define('NONCE_KEY',        'put your unique phrase here');
+define('AUTH_SALT',        'put your unique phrase here');
+define('SECURE_AUTH_SALT', 'put your unique phrase here');
+define('LOGGED_IN_SALT',   'put your unique phrase here');
+define('NONCE_SALT',       'put your unique phrase here');
 
 /**#@-*/
 
@@ -85,6 +85,7 @@ define('WP_DEBUG', false);
  * 如需禁用，请移除或注释掉本行。
  */
 define('WP_ZH_CN_ICP_NUM', true);
+define('FS_METHOD', "direct");
 
 /* 好了！请不要再继续编辑。请保存本文件。使用愉快！ */
 
@@ -94,8 +95,3 @@ if ( !defined('ABSPATH') )
 
 /** 设置WordPress变量和包含文件。 */
 require_once(ABSPATH . 'wp-settings.php');
-define("FS_METHOD", "direct");
-
-define("FS_CHMOD_DIR", 0777);
-
-define("FS_CHMOD_FILE", 0777);

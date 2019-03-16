@@ -1,8 +1,6 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // disable direct access
-}
+if (!defined('ABSPATH')) die('No direct access.');
 
 /**
  * Override parent 'MetaSlider' class with CoinSlider specific markup,
@@ -35,7 +33,8 @@ class MetaCoinSlider extends MetaSlider {
             'navigation' => 'showNavigationButtons',
             'links' => 'showNavigationPrevNext',
             'prevText' => 'prevText',
-            'nextText' => 'nextText'
+            'nextText' => 'nextText',
+            'autoPlay' => 'autoplay'
         );
 
         if ( isset( $params[$param] ) ) {

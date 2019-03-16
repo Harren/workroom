@@ -1,7 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // disable direct access
-}
+if (!defined('ABSPATH')) die('No direct access.');
 
 /**
  * Adds MetaSlider widget.
@@ -15,7 +13,7 @@ class MetaSlider_Widget extends WP_Widget {
 		parent::__construct(
 			'metaslider_widget', // Base ID
 			'MetaSlider', // Name
-			array( 'description' => __( 'MetaSlider', 'ml-slider' ) ) // Args
+			array( 'description' => 'MetaSlider' ) // Args
 		);
 	}
 
